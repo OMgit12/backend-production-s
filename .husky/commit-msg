@@ -1,4 +1,7 @@
-#1/use/bin/env sh
-. "$(dirname -- "$0")/ _/husky.sh"
+# #1/use/bin/env sh
+# . "$(dirname -- "$0")/ _/husky.sh"
 
-npx --no-install commitlint --edit "$1"
+# npx --no-install commitlint --edit "$1"
+
+# .husky/commit-msg
+npx commitlint --edit "$1"
