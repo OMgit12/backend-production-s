@@ -3,6 +3,7 @@ import { Request } from 'express';
 import config from '../config/config';
 import {EApplicationEnviroment} from '../constant/application';
 import responseMessage  from '../constant/httpMassage';
+import logger from '../util/logger';
 
 export default (error: Error | unknown, req: Request, errorStatusCode: number): HttpError => {
     const errorObj: HttpError = {
@@ -20,7 +21,7 @@ export default (error: Error | unknown, req: Request, errorStatusCode: number): 
     };
 
     // log
-    console.error(`CONTROLLER_LOG ERROR`, { meta: errorObj });
+    logger.error(`CONTROLLER_LOG ERROR`, { meta: errorObj });
 
     // production
     if (config.ENV ===  EApplicationEnviroment.PRODUCTION) {

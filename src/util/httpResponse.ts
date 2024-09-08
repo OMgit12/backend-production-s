@@ -2,6 +2,7 @@ import {Request ,Response} from 'express'
 import { HttpApiResponse } from '../types/types';
 import config  from '../config/config';
 import {EApplicationEnviroment} from '../constant/application';
+import logger from '../util/logger';
 
 export default (req: Request, res: Response, ResponceStatusCode: number, ResponceMassage: string , data: unknown) => {
     const responce: HttpApiResponse = {
@@ -19,7 +20,7 @@ export default (req: Request, res: Response, ResponceStatusCode: number, Responc
     }
 
     // log
-    console.info(`RESPONSE`, { meta: responce });
+    logger.info(`RESPONSE`, { meta: responce });
 
     //prodcution
     if (config.ENV ===  EApplicationEnviroment.PRODUCTION) {
