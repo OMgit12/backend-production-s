@@ -5,8 +5,10 @@ import  config  from '../config/config'
 import  {EApplicationEnviroment}  from '../constant/application'
 import { FileTransportInstance } from 'winston/lib/winston/transports'
 import path from 'path'
+import * as sourceMapSupport from 'source-map-support'
 
-
+// linking trace support with source (js files error  showing in the TS files)
+sourceMapSupport.install()
 
 const consoleLogFormat = format.printf((info) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
