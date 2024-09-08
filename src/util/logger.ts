@@ -1,97 +1,104 @@
-import util from 'util'
-import { createLogger, format, transports } from 'winston'
-import { ConsoleTransportInstance } from 'winston/lib/winston/transports'
-import  config  from '../config/config'
-import  {EApplicationEnviroment}  from '../constant/application'
-import { FileTransportInstance } from 'winston/lib/winston/transports'
-import path from 'path'
-import * as sourceMapSupport from 'source-map-support'
+import util from 'util';
+import { createLogger, format, transports } from 'winston';
+import { ConsoleTransportInstance } from 'winston/lib/winston/transports';
+import config from '../config/config';
+import { EApplicationEnviroment } from '../constant/application';
+import { FileTransportInstance } from 'winston/lib/winston/transports';
+import path from 'path';
+import * as sourceMapSupport from 'source-map-support';
+import { red, blue, yellow, green, magenta } from 'colorette';
 
-// linking trace support with source (js files error  showing in the TS files)
-sourceMapSupport.install()
+sourceMapSupport.install();
+
+const colorizeLevel = (level: string) => {
+  switch (level) {
+    case 'ERROR':
+      return red(level);
+    case 'INFO':
+      return blue(level);
+    case 'WARN':
+      return yellow(level);
+    default:
+      return level;
+  }
+};
 
 const consoleLogFormat = format.printf((info) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { level, message, timestamp, meta = {} } = info
+  const { level, message, timestamp, meta = {} } = info;
 
-    const customLevel = (level.toUpperCase())
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const customTimestamp = (timestamp as string)
+  const customLevel = colorizeLevel(level.toUpperCase());
+  const customTimestamp = green(timestamp as string);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const customMessage = message
+  const customMessage = message;
 
-    const customMeta = util.inspect(meta, {
-        showHidden: false,
-        depth: null,
-        colors: true
-    })
+  const customMeta = util.inspect(meta, {
+    showHidden: false,
+    depth: null,
+    colors: true,
+  });
 
-    const customLog = `${customLevel} [${customTimestamp}] ${customMessage}\n${('META')} ${customMeta}\n`
+  const customLog = `${customLevel} [${customTimestamp}] ${customMessage}\n${magenta('META')} ${customMeta}\n`;
 
-    return customLog
-})
+  return customLog;
+});
 
 const consoleTransport = (): ConsoleTransportInstance[] => {
-    if (config.ENV === EApplicationEnviroment.DEVELOPMENT) {
-        return [
-            new transports.Console({
-                level: 'info',
-                format: format.combine(format.timestamp(), consoleLogFormat)
-            })
-        ]
-    }
+  if (config.ENV === EApplicationEnviroment.DEVELOPMENT) {
+    return [
+      new transports.Console({
+        level: 'info',
+        format: format.combine(format.timestamp(), consoleLogFormat),
+      }),
+    ];
+  }
 
-    return []
-}
+  return [];
+};
 
 const fileLogFormat = format.printf((info) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { level, message, timestamp, meta = {} } = info
+  const { level, message, timestamp, meta = {} } = info;
 
-    const logMeta: Record<string, unknown> = {}
+  const logMeta: Record<string, unknown> = {};
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    for (const [key, value] of Object.entries(meta)) {
-        if (value instanceof Error) {
-            logMeta[key] = {
-                name: value.name,
-                message: value.message,
-                trace: value.stack || ''
-            }
-        } else {
-            logMeta[key] = value
-        }
+  for (const [key, value] of Object.entries(meta)) {
+    if (value instanceof Error) {
+      logMeta[key] = {
+        name: value.name,
+        message: value.message,
+        trace: value.stack || '',
+      };
+    } else {
+      logMeta[key] = value;
     }
+  }
 
-    const logData = {
-        level: level.toUpperCase(),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        message,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        timestamp,
-        meta: logMeta
-    }
+  const logData = {
+    level: level.toUpperCase(),
+    message,
 
-    return JSON.stringify(logData, null, 4)
-})
+    timestamp,
+    meta: logMeta,
+  };
+
+  return JSON.stringify(logData, null, 4);
+});
+
 
 
 const FileTransport = (): FileTransportInstance[] => {
-    return [
-        new transports.File({
-            filename: path.join(__dirname, '../', '../', 'logs', `${config.ENV}.log`),
-            level: 'info',
-            format: format.combine(format.timestamp(), fileLogFormat)
-        })
-    ]
-}
-
+  return [
+    new transports.File({
+      filename: path.join(__dirname, '../', '../', 'logs', `${config.ENV}.log`),
+      level: 'info',
+      format: format.combine(format.timestamp(), fileLogFormat),
+    }),
+  ];
+};
 
 export default createLogger({
-    defaultMeta: {
-        meta: {}
-    },
-    transports: [...consoleTransport(), ...FileTransport()]
-})
+  defaultMeta: {
+    meta: {},
+  },
+  transports: [...consoleTransport(), ...FileTransport()],
+});
 
