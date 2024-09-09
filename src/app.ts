@@ -6,12 +6,24 @@ import responceMassage from './constant/httpMassage';
 import httpError from './util/httpError';
 import logger from './util/logger';
 import helmet from 'helmet';
+import cors from 'cors';
 
 const app: Application = express();
 
 // middelware
 app.use(helmet());
+
+app.use(cors(
+  {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],  
+    credentials: true
+  }
+))
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Middleware to log incoming requests
