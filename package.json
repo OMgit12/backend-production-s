@@ -9,7 +9,9 @@
     "start": "cross-env NODE_ENV=prodution node dist/server.js",
     "lint": "eslint",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate:dev": "cross-env MIGRATE_MODE_development node script/migration.js",
+    "migrate:prod": "cross-env MIGRATE_MODE_production node script/migration.js"
   },
   "author": "",
   "license": "ISC",
