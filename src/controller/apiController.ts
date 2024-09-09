@@ -26,5 +26,6 @@ export default {
       httpError(next, err, req, 500);
     }
   },
+
 };
 
