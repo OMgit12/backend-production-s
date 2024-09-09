@@ -7,7 +7,7 @@ export default {
     getSystemHealth: ()=> {
         return{
             cpuUsage: os.loadavg(),
-            totalMemory: `${os.totalmem() / 1024 / 1024} MB`,
+            totalMemory: `${os.totalmem() / 1024 / 1024 } MB`,
             freeMemory: `${os.freemem() / 1024 / 1024} MB`,
             hostname: os.hostname() 
         }
